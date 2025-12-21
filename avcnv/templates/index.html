@@ -1,0 +1,430 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AVCNV</title>
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css?v=2025122102">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部标题栏 -->
+        <div class="app-header">
+            <h4 class="mb-0"><i class="bi bi-film"></i> 音视频格式转换器</h4>
+            <div class="dropdown">
+                <button class="btn btn-sm about-dropdown dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-info-circle"></i> 关于
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#aboutModal">关于</a></li>
+                    <li><a class="dropdown-item" href="https://github.com/fengzeest-cpu/avcnv.git" target="_blank" rel="noopener">GitHub</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="app-body">
+            <!-- 左侧：文件浏览器 -->
+            <div class="file-browser">
+                <div class="browser-header">
+                    <div class="browser-header-row">
+                        <h6><i class="bi bi-folder2-open"></i> 文件浏览器</h6>
+                        <div class="sort-group sort-group-compact">
+                            <span class="sort-label sort-label-green"><i class="bi bi-sort-alpha-down"></i> 排序</span>
+                            <select class="form-select form-select-sm sort-select" id="browserSortSelect">
+                                <option value="name">名称</option>
+                                <option value="time">时间</option>
+                                <option value="size">大小</option>
+                                <option value="type">类型</option>
+                            </select>
+                            <button class="sort-order-btn sort-order-btn-green" type="button" id="browserSortOrderBtn" title="降序">
+                                <i class="bi bi-sort-down"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="browser-scrollable">
+                    <div class="browser-layout">
+                        <!-- 左侧标签页和操作按钮 -->
+                        <div class="folder-sidebar">
+                            <div class="folder-tabs">
+                                <button class="folder-tab active" type="button" data-target="uploadedSection" id="uploadedTab">
+                                    <div class="tab-icon bg-primary">
+                                        <i class="bi bi-cloud-arrow-up"></i>
+                                    </div>
+                                    <div class="tab-info">
+                                        <span class="tab-name">上传</span>
+                                        <span class="badge bg-primary" id="uploadedCount">0</span>
+                                    </div>
+                                </button>
+                                <button class="folder-tab" type="button" data-target="localSection" id="localTab">
+                                    <div class="tab-icon bg-warning">
+                                        <i class="bi bi-folder-fill"></i>
+                                    </div>
+                                    <div class="tab-info">
+                                        <span class="tab-name">本地</span>
+                                        <span class="badge bg-warning" id="localCount">0</span>
+                                    </div>
+                                </button>
+                                <button class="folder-tab" type="button" data-target="outputSection" id="outputTab">
+                                    <div class="tab-icon bg-success">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                    </div>
+                                    <div class="tab-info">
+                                        <span class="tab-name">完成</span>
+                                        <span class="badge bg-success" id="outputCount">0</span>
+                                    </div>
+                                </button>
+
+                                <!-- 上传进度圆圈（显示剩余待上传数量） -->
+                                <div class="upload-progress d-none" id="uploadProgressIndicator" title="正在上传">
+                                    <div class="upload-progress-circle">
+                                        <span id="uploadProgressNumber">0</span>
+                                    </div>
+                                    <span class="upload-progress-text">上传中</span>
+                                </div>
+                                <!-- 删除进度圆圈（显示剩余待删除数量） -->
+                                <div class="delete-progress d-none" id="deleteProgressIndicator" title="正在删除">
+                                    <div class="delete-progress-circle">
+                                        <span id="deleteProgressNumber">0</span>
+                                    </div>
+                                    <span class="delete-progress-text">删除中</span>
+                                </div>
+                            </div>
+
+                            <!-- 操作按钮 -->
+                            <div class="sidebar-actions">
+                                <button class="btn btn-sm btn-primary w-100 mb-2" id="uploadBtn">
+                                    <i class="bi bi-plus-circle-fill"></i>
+                                    <span>上传</span>
+                                </button>
+                                <button class="btn btn-sm btn-secondary w-100" id="refreshBtn">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                    <span>刷新</span>
+                                </button>
+                                <input type="file" id="fileInput" multiple accept="audio/*,video/*" style="display: none;">
+                            </div>
+                        </div>
+
+                        <!-- 右侧内容区 -->
+                        <div class="folder-content-wrapper">
+                            <!-- 上传文件内容 -->
+                            <div class="folder-section active" id="uploadedSection" data-source="uploaded">
+                                <div class="folder-content" id="uploadedFilesList">
+                                    <div class="empty-hint">暂无文件</div>
+                                </div>
+                                <div class="list-actions">
+                                    <button class="list-action" type="button" id="selectAllUploadedBtn">
+                                        <i class="bi bi-check-square"></i> 全选
+                                    </button>
+                                    <button class="list-action" type="button" id="bulkDeleteUploadedBtn" disabled>
+                                        <i class="bi bi-trash"></i> 批量删除
+                                    </button>
+                                    <button class="list-action" type="button" id="addSelectedUploadedBtn" disabled>
+                                        <i class="bi bi-plus-circle"></i> 添加选中
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- 本地文件内容 -->
+                            <div class="folder-section" id="localSection" data-source="local">
+                                <div class="folder-content" id="localFilesList">
+                                    <div class="empty-hint">暂无文件</div>
+                                </div>
+                                <div class="list-actions">
+                                    <button class="list-action" type="button" id="selectAllLocalBtn">
+                                        <i class="bi bi-check-square"></i> 全选
+                                    </button>
+                                    <button class="list-action" type="button" id="bulkDeleteLocalBtn" disabled>
+                                        <i class="bi bi-trash"></i> 批量删除
+                                    </button>
+                                    <button class="list-action" type="button" id="addSelectedLocalBtn" disabled>
+                                        <i class="bi bi-plus-circle"></i> 添加选中
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- 已完成文件内容 -->
+                            <div class="folder-section" id="outputSection" data-source="output">
+                                <div class="folder-content" id="outputFilesList">
+                                    <div class="empty-hint">暂无文件</div>
+                                </div>
+                                <div class="list-actions">
+                                    <button class="list-action" type="button" id="selectAllOutputBtn">
+                                        <i class="bi bi-check-square"></i> 全选
+                                    </button>
+                                    <button class="list-action" type="button" id="bulkDeleteOutputBtn" disabled>
+                                        <i class="bi bi-trash"></i> 批量删除
+                                    </button>
+                                    <button class="list-action" type="button" id="downloadSelectedOutputBtn" disabled>
+                                        <i class="bi bi-download"></i> 下载选中
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 中间：待转换列表 -->
+            <div class="convert-queue">
+                <div class="queue-header">
+                    <h6><i class="bi bi-list-ul"></i> 待转换队列</h6>
+                    <div class="queue-header-actions">
+                        <button class="btn btn-sm btn-outline-warning" id="pauseBtn" disabled>
+                            <i class="bi bi-pause-circle"></i> 暂停
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" id="clearQueueBtn" disabled>
+                            <i class="bi bi-trash"></i> 清空
+                        </button>
+                    </div>
+                </div>
+                <div class="queue-content" id="queueContent">
+                    <div class="empty-state">
+                        <i class="bi bi-inbox"></i>
+                        <p>从左侧点击文件添加到队列</p>
+                    </div>
+                </div>
+                <div class="queue-footer">
+                    <div class="queue-info">
+                        <span>队列文件: <strong id="queueCount">0</strong></span>
+                        <span id="overallProgressText" style="display: none; margin-left: 1rem;">
+                            总体进度: <strong id="overallProgressValue">0%</strong>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧：转换设置 -->
+            <div class="convert-settings">
+                <div class="settings-header">
+                    <h6><i class="bi bi-gear"></i> 转换设置</h6>
+                </div>
+
+                <div class="settings-content">
+                    <!-- 输出格式 -->
+                    <div class="setting-item">
+                        <label class="form-label">输出格式</label>
+                        <div class="format-grid">
+                            <input type="radio" class="btn-check" name="format" id="fmt-mp4" value="mp4" checked>
+                            <label class="btn btn-outline-primary btn-sm" for="fmt-mp4">MP4</label>
+
+                            <input type="radio" class="btn-check" name="format" id="fmt-avi" value="avi">
+                            <label class="btn btn-outline-primary btn-sm" for="fmt-avi">AVI</label>
+
+                            <input type="radio" class="btn-check" name="format" id="fmt-mkv" value="mkv">
+                            <label class="btn btn-outline-primary btn-sm" for="fmt-mkv">MKV</label>
+
+                            <input type="radio" class="btn-check" name="format" id="fmt-mov" value="mov">
+                            <label class="btn btn-outline-primary btn-sm" for="fmt-mov">MOV</label>
+
+                            <input type="radio" class="btn-check" name="format" id="fmt-mp3" value="mp3">
+                            <label class="btn btn-outline-success btn-sm" for="fmt-mp3">MP3</label>
+
+                            <input type="radio" class="btn-check" name="format" id="fmt-wav" value="wav">
+                            <label class="btn btn-outline-success btn-sm" for="fmt-wav">WAV</label>
+
+                            <input type="radio" class="btn-check" name="format" id="fmt-aac" value="aac">
+                            <label class="btn btn-outline-success btn-sm" for="fmt-aac">AAC</label>
+
+                            <input type="radio" class="btn-check" name="format" id="fmt-flac" value="flac">
+                            <label class="btn btn-outline-success btn-sm" for="fmt-flac">FLAC</label>
+                        </div>
+                    </div>
+
+                    <!-- 高级选项 -->
+                    <div class="setting-item">
+                        <button class="btn btn-link btn-sm p-0 text-decoration-none" data-bs-toggle="collapse"
+                                data-bs-target="#advancedOptions">
+                            <i class="bi bi-sliders"></i> 高级选项
+                            <i class="bi bi-chevron-down ms-1"></i>
+                        </button>
+                        <div class="collapse show mt-2" id="advancedOptions">
+                            <!-- 视频选项 -->
+                            <div id="videoOptions" style="display: none;">
+                                <div class="row g-2">
+                                    <div class="col-12">
+                                        <label class="form-label small">视频编码器</label>
+                                        <select class="form-select form-select-sm" id="videoCodec">
+                                            <option value="libx264">H.264 (推荐)</option>
+                                            <option value="libx265">H.265/HEVC</option>
+                                            <option value="copy">复制（不重新编码，忽略其他参数）</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label small">分辨率</label>
+                                        <select class="form-select form-select-sm" id="resolution">
+                                            <option value="">保持原样</option>
+                                            <option value="1920x1080">1920x1080 (1080p)</option>
+                                            <option value="1280x720">1280x720 (720p)</option>
+                                            <option value="854x480">854x480 (480p)</option>
+                                            <option value="640x360">640x360 (360p)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label small">视频比特率</label>
+                                        <select class="form-select form-select-sm" id="videoBitrate">
+                                            <option value="">自动</option>
+                                            <option value="5000k">5000k (高质量)</option>
+                                            <option value="2500k">2500k (中等)</option>
+                                            <option value="1000k">1000k (低质量)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label small">帧率</label>
+                                        <select class="form-select form-select-sm" id="frameRate">
+                                            <option value="">保持原样</option>
+                                            <option value="60">60 fps</option>
+                                            <option value="30">30 fps</option>
+                                            <option value="24">24 fps</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label small">音频比特率</label>
+                                        <select class="form-select form-select-sm" id="videoAudioBitrate">
+                                            <option value="">保持原样</option>
+                                            <option value="192k">192k</option>
+                                            <option value="128k">128k</option>
+                                            <option value="96k">96k</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 音频选项 -->
+                            <div id="audioOptions" style="display: none;">
+                                <div class="row g-2">
+                                    <div class="col-12">
+                                        <label class="form-label small">音频编码器</label>
+                                        <select class="form-select form-select-sm" id="audioCodec">
+                                            <option value="aac">AAC (推荐)</option>
+                                            <option value="libmp3lame">MP3</option>
+                                            <option value="flac">FLAC (无损)</option>
+                                            <option value="copy">复制（不重新编码，忽略其他参数）</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label small">音频比特率</label>
+                                        <select class="form-select form-select-sm" id="audioBitrate">
+                                            <option value="">自动</option>
+                                            <option value="320k">320k (最高质量)</option>
+                                            <option value="256k">256k (高质量)</option>
+                                            <option value="192k">192k (中等)</option>
+                                            <option value="128k">128k (标准)</option>
+                                            <option value="96k">96k (低质量)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label small">采样率</label>
+                                        <select class="form-select form-select-sm" id="sampleRate">
+                                            <option value="">保持原样</option>
+                                            <option value="48000">48000 Hz</option>
+                                            <option value="44100">44100 Hz (CD质量)</option>
+                                            <option value="32000">32000 Hz</option>
+                                            <option value="22050">22050 Hz</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label small">声道</label>
+                                        <select class="form-select form-select-sm" id="audioChannels">
+                                            <option value="">保持原样</option>
+                                            <option value="2">立体声 (2声道)</option>
+                                            <option value="1">单声道 (1声道)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label small">音量调整</label>
+                                        <select class="form-select form-select-sm" id="volumeAdjust">
+                                            <option value="">不调整</option>
+                                            <option value="2.0">+200% (加倍)</option>
+                                            <option value="1.5">+150%</option>
+                                            <option value="0.5">-50% (减半)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-footer">
+                    <button class="btn btn-success w-100" id="startConvertBtn" disabled>
+                        <i class="bi bi-play-circle"></i> 开始转换
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 关于弹窗 -->
+    <div class="modal fade" id="aboutModal" tabindex="-1" aria-labelledby="aboutModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content about-modal-content">
+                <div class="modal-header about-modal-header">
+                    <h6 class="modal-title" id="aboutModalLabel"><i class="bi bi-info-circle-fill"></i> 关于程序</h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="关闭"></button>
+                </div>
+                <div class="modal-body about-modal-body">
+                    <div class="about-item">
+                        <div class="about-label">程序简介</div>
+                        <div class="about-text">一个基于 FFmpeg 的 Web 音视频格式转换程序，可部署到 Docker 中运行。</div>
+                    </div>
+                    <div class="about-item">
+                        <div class="about-label">程序作者</div>
+                        <div class="about-text">风泽</div>
+                        <div class="about-email">fengze.est@gmail.com</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/app.js?v=2025121908"></script>
+
+    <!-- 上传策略弹窗 -->
+    <div class="modal-backdrop" id="uploadStrategyModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="bi bi-shield-check"></i>
+                    选择同名文件处理方式
+                </div>
+                <button class="modal-close" onclick="closeUploadStrategyModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-subtitle">本次共选择 <strong id="uploadTotalCount">0</strong> 个文件，请选择处理策略：</p>
+                <div class="strategy-options">
+                    <label class="strategy-card">
+                        <input type="radio" name="uploadStrategy" value="skip">
+                        <div class="strategy-content">
+                            <div class="strategy-title">跳过上传</div>
+                            <div class="strategy-desc">遇到同名文件时自动跳过本文件</div>
+                        </div>
+                    </label>
+                    <label class="strategy-card">
+                        <input type="radio" name="uploadStrategy" value="overwrite" checked>
+                        <div class="strategy-content">
+                            <div class="strategy-title">覆盖源文件</div>
+                            <div class="strategy-desc">用新文件替换已有同名文件</div>
+                        </div>
+                    </label>
+                    <label class="strategy-card">
+                        <input type="radio" name="uploadStrategy" value="rename">
+                        <div class="strategy-content">
+                            <div class="strategy-title">重命名保留</div>
+                            <div class="strategy-desc">自动追加数字避免文件名相同</div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline-secondary btn-sm" onclick="closeUploadStrategyModal()">取消</button>
+                <button class="btn btn-success btn-sm" onclick="confirmUploadStrategy()">确认并上传</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

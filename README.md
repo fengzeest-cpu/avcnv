@@ -12,7 +12,6 @@
 - 🐳 **项目部署**: 支持本地运行（需安装python和ffmpeg）及docker部署
 
 
-
 ## 📁 项目结构
 
 ```
@@ -47,19 +46,26 @@ avcnv/
 
 ## 🎯 使用说明
 
-### 1. 上传文件
+### 1. docker部署
+**YML**
+  version: '3.8'
+  
+  services:
+    web:
+      image: evilhsu/avcnv:latest
+      container_name: avcnv
+      ports:
+        - "5123:5123"
+      volumes:
+        - ./uploads:/app/uploads          #上传文件存储-映射至自己需要的文件夹
+        - ./localfiles:/app/localfiles    #本地文件读取-映射至自己需要的文件夹
+        - ./outputs:/app/outputs          #输出文件存储-映射至自己需要的文件夹
+      environment:
+        - MAX_FILE_SIZE=104857600
+        - LOG_LEVEL=INFO
+      restart: unless-stopped
 
-- 点击左侧"上传"按钮选择文件
-- 支持多文件同时上传
-- 支持音频和视频格式
-
-### 2. 添加到转换队列
-
-- 在文件列表中点击文件添加到队列
-- 或使用"全选"+"添加选中"批量添加
-- 注意：队列中的文件格式必须一致（全是音频或全是视频）
-
-### 3. 配置转换选项
+### 2. 转换选项
 
 **输出格式**:
 - 视频: MP4, AVI, MKV, MOV

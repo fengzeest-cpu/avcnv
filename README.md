@@ -47,7 +47,8 @@ avcnv/
 ## 🎯 使用说明
 
 ### 1. docker部署
-**YML**
+**docker-compose.yml**:
+```
   version: '3.8'
   
   services:
@@ -64,6 +65,7 @@ avcnv/
         - MAX_FILE_SIZE=104857600
         - LOG_LEVEL=INFO
       restart: unless-stopped
+```
 
 ### 2. 转换选项
 

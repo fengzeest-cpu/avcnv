@@ -62,9 +62,8 @@ avcnv/
         - ./localfiles:/app/localfiles    #本地文件读取-映射至自己需要的文件夹
         - ./outputs:/app/outputs          #输出文件存储-映射至自己需要的文件夹
       environment:
-        - MAX_FILE_SIZE=104857600         #限制上传文件大小，不限制就删除此行
         - LOG_LEVEL=INFO
-      restart: unless-stopped
+      restart: always
 ```
 
 ### 2. 转换选项

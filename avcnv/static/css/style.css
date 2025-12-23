@@ -807,14 +807,114 @@ body {
 }
 
 @media (max-width: 768px) {
-    .app-body {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto 1fr auto;
+    html, body {
+        position: fixed;
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
     }
 
-    .file-browser, .convert-queue {
+    .app-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100vh;
+    }
+
+    .app-body {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        height: calc(100vh - 60px);
+    }
+
+    .file-browser, .convert-queue, .convert-settings {
         border-right: none;
         border-bottom: 1px solid #e1e4e8;
+        height: auto;
+        max-height: none;
+        flex-shrink: 0;
+    }
+
+    .file-browser {
+        min-height: 550px;
+        height: 550px;
+    }
+
+    .convert-queue {
+        min-height: 400px;
+        height: 400px;
+    }
+
+    .convert-settings {
+        min-height: 510px;
+        height: 510px;
+    }
+
+    /* 移动端文件浏览器布局优化 - 保持左侧栏 */
+    .folder-sidebar {
+        width: 80px;
+    }
+
+    .folder-tabs {
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .sidebar-actions .btn {
+        font-size: 0.7rem;
+        padding: 0.4rem 0.2rem;
+    }
+
+    .sidebar-actions .btn i {
+        font-size: 0.95rem;
+    }
+
+    .sidebar-actions .btn span {
+        font-size: 0.7rem;
+    }
+
+    .folder-content-wrapper {
+        flex: 1;
+        min-height: 400px;
+    }
+
+    /* 确保移动端高级选项展开 */
+    #advancedOptions {
+        display: block !important;
+    }
+
+    #advancedOptions.collapse:not(.show) {
+        display: block !important;
+    }
+
+    /* 防止点击按钮时页面跳动 */
+    .format-grid .btn,
+    .btn-check {
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+        user-select: none;
+    }
+
+    .format-grid .btn:focus,
+    .format-grid .btn:active {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+    /* 防止输入框导致页面缩放 */
+    input, select, textarea, button {
+        font-size: 16px !important;
+    }
+
+    /* 防止点击造成的布局偏移 */
+    * {
+        -webkit-tap-highlight-color: transparent;
     }
 }
 

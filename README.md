@@ -1,4 +1,5 @@
 # AVCNV 音视频格式转换器
+<img width="1593" height="771" alt="1766453296351" src="https://github.com/user-attachments/assets/5f4860ff-c95e-4426-bac6-84df953ee291" />
 
 基于 FastAPI + FFmpeg 的 Web 音视频格式转换服务，支持批量转换、实时进度显示、本地文件管理等功能。
 

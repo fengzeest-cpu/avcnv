@@ -13,38 +13,6 @@
 - 🐳 **项目部署**: 支持本地运行（需安装python和ffmpeg）及docker部署
 
 
-## 📁 项目结构
-
-```
-
-avcnv/
-├── main.py              # FastAPI 主应用
-├── routes.py            # API 路由定义
-├── converter.py         # FFmpeg 转换逻辑
-├── models.py            # 数据模型
-├── requirements.txt     # Python 依赖
-├── static/              # 静态资源
-│   ├── css/
-│   │   ├── bootstrap.min.css
-│   │   ├── bootstrap-icons.min.css
-│   │   └── style.css
-│   ├── js/
-│   │   ├── bootstrap.bundle.min.js
-│   │   └── app.js
-│   └── fonts/
-│       ├── bootstrap-icons.woff2
-│       └── bootstrap-icons.woff
-├── templates/           # HTML 模板
-│   └── index.html
-├── uploads/             # 上传文件目录
-├── local_files/         # 本地文件目录
-└── outputs/             # 输出文件目录
-
-avcnv/
-├── Dockerfile           # Docker 镜像配置 （编译时放在avcnv文件夹同目录）
-```
-
-
 ## 🎯 使用说明
 
 ### 1. docker部署

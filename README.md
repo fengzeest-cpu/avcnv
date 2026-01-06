@@ -18,21 +18,26 @@
 ### 1. docker部署
 **docker-compose.yml**:
 ```
-  version: '3.8'
-  
-  services:
-    web:
-      image: evilhsu/avcnv:latest
-      container_name: avcnv
-      ports:
-        - "5123:5123"
-      volumes:
-        - ./uploads:/app/uploads          #上传文件存储-映射至自己需要的文件夹
-        - ./localfiles:/app/localfiles    #本地文件读取-映射至自己需要的文件夹
-        - ./outputs:/app/outputs          #输出文件存储-映射至自己需要的文件夹
-      environment:
-        - LOG_LEVEL=INFO
-      restart: always
+version: '3.8'
+
+services:
+  web:
+    image: evilhsu/avcnv:latest
+    container_name: avcnv
+    ports:
+      - "5123:5123"
+    volumes:
+      - ./uploads:/app/uploads   #映射自己对应的NAS文件夹
+      - ./localfiles:/app/localfiles
+      - ./outputs:/app/outputs
+    environment:
+      - LOG_LEVEL=INFO
+      # 增加集成GPU的硬件支持 
+      # iHD (Intel新) / i965 (Intel旧) / radeonsi (AMD) 根据对应CPU来填写  如GPU:Intel UHD Graphics P630 就填写 iHD
+      - LIBVA_DRIVER_NAME=iHD
+    devices:
+      - /dev/dri:/dev/dri
+    restart: always
 ```
 
 ### 2. 转换选项
@@ -57,6 +62,10 @@
 - 声道: 立体声, 单声道
 - 音量调整: +200%, +150%, -50%
 
+2026-1-6：软件优化
+1、增加精度音频参数调整
+2、增加GPU硬件编码支持（仅支持集成GPU）
+3、优化使用逻辑及美化部分显示
 
 MIT License © 2025 风泽
 

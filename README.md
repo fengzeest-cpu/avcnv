@@ -18,16 +18,26 @@ services:
     ports:
       - "5123:5123"
     volumes:
-      - ./uploads:/app/uploads          #./uploads映射为自己对应的NAS文件夹
-      - ./localfiles:/app/localfiles    #./localfiles映射为自己对应的NAS文件夹
-      - ./outputs:/app/outputs          #./outputs映射为自己对应的NAS文件夹
+      - /vol1/1000/avcnvfiles/uploads:/app/uploads
+      - /vol1/1000/avcnvfiles/localfiles:/app/localfiles
+      - /vol1/1000/avcnvfiles/outputs:/app/outputs
     environment:
       - LOG_LEVEL=INFO
-      # 增加集成GPU的硬件支持 
-      # iHD (Intel新) / i965 (Intel旧) / radeonsi (AMD) 根据对应CPU来填写  如GPU:Intel UHD Graphics P630 就填写 iHD
-      - LIBVA_DRIVER_NAME=iHD
+      # VAAPI 驱动会自动检测，无需手动配置
+      # 如需手动指定，取消下行注释并填入: iHD (Intel新) / i965 (Intel旧) / radeonsi (AMD)
+      - LIBVA_DRIVER_NAME=
     devices:
       - /dev/dri:/dev/dri
+
+    # 添加特权模式确保 GPU 访问权限
+    privileged: true
+    # 添加安全选项
+    security_opt:
+      - seccomp:unconfined
+    # 确保设备控制组规则
+    device_cgroup_rules:
+      - 'c 226:* rmw'  # DRM 设备权限
+      
     restart: always
 ```
 
@@ -64,6 +74,10 @@ services:
 - 解决WEBM转码失败问题
 - 增加音频文件并发模式（提升音频解码效率）
 
-MIT License © 2025 风泽
+**2026-2-1：软件优化**：
+- 完善docker-compose.yaml
+- avcnv.fpk上线
+
+MIT License © 2025-2026 风泽
 
 **享受使用！** 🎉

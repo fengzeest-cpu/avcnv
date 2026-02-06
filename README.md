@@ -1,5 +1,5 @@
 # AVCNV 音视频格式转换器
-<img width="1593" height="771" alt="1766453296351" src="https://github.com/user-attachments/assets/5f4860ff-c95e-4426-bac6-84df953ee291" />
+<img width="1593" height="771" alt="1766453296351" src="https://github.com/fengzeest-cpu/avcnv/blob/main/demo%202.0.jpg" />
 
 AVCNV是基于FFmpeg 的音视频格式转换工具
 目前只支持部署到Docker，主要应用于NAS中批量对音频、视频格式编码、裁剪等

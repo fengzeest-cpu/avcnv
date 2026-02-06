@@ -18,17 +18,18 @@ services:
     ports:
       - "5123:5123"
     volumes:
-      - /vol1/1000/avcnvfiles/uploads:/app/uploads
-      - /vol1/1000/avcnvfiles/localfiles:/app/localfiles
-      - /vol1/1000/avcnvfiles/outputs:/app/outputs
+      - ./data:/app/data         
+      - ./uploads:/app/uploads   #映射自己对应的NAS文件夹
+      - ./outputs:/app/outputs   #映射自己对应的NAS文件夹
+      - ./localfiles:/app/localfiles  # 本地文件夹映射
     environment:
       - LOG_LEVEL=INFO
-      # VAAPI 驱动会自动检测，无需手动配置
-      # 如需手动指定，取消下行注释并填入: iHD (Intel新) / i965 (Intel旧) / radeonsi (AMD)
+      # GPU硬件加速支持 - 留空让系统自动检测最佳驱动
+      # 系统会按优先级自动尝试: iHD (Intel新) -> i965 (Intel旧) -> radeonsi (AMD)
+      # 如需手动指定，可设置为: iHD, i965, 或 radeonsi
       - LIBVA_DRIVER_NAME=
     devices:
       - /dev/dri:/dev/dri
-
     # 添加特权模式确保 GPU 访问权限
     privileged: true
     # 添加安全选项
@@ -37,7 +38,6 @@ services:
     # 确保设备控制组规则
     device_cgroup_rules:
       - 'c 226:* rmw'  # DRM 设备权限
-      
     restart: always
 ```
 
@@ -73,10 +73,14 @@ services:
 - 增加网易云音乐的文件解码
 - 解决WEBM转码失败问题
 - 增加音频文件并发模式（提升音频解码效率）
+- 增加裁剪功能
 
 **2026-2-1：软件优化**：
-- 完善docker-compose.yaml
+- 部署优化docker-compose.yaml
 - avcnv.fpk上线
+- 优化软件效率，修复多处卡死bug
+- 优化进度显示，增加断点续传
+- 增加多个基础功能方便日常操作
 
 MIT License © 2025-2026 风泽
 
